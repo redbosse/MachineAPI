@@ -1,0 +1,6 @@
+@MachineAPI_HostAddress = http://localhost:5274
+
+GET {{MachineAPI_HostAddress}}/MachineAPI/
+Accept: application/json
+
+###
