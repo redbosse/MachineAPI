@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using MachineAPI;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using Serilog;
 using Microsoft.AspNetCore.Authorization;
+using MachineAPI.Model;
 
 namespace MachineAPI.Controllers
 {
