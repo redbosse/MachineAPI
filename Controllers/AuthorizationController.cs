@@ -75,7 +75,7 @@ namespace MachineAPI.Controllers
             return "Authorization failed";
         }
 
-        [HttpPost("/getAllPerson/")]
+        [HttpGet("/getAllPerson/")]
         public string GetAllPerson()
         {
             return _personDataBase.GetUserlist();

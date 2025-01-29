@@ -84,14 +84,24 @@ namespace MachineAPI.Controllers
         [HttpPost("application/RenameAgregat/")]
         public async Task<ActionResult<string>> Rename(string sourceName, string newName)
         {
-            var succesLog = $"The name \'{sourceName}\' has been replaced by \'{sourceName}\'";
-            var errorLog = $"Name {sourceName} was not found in the database";
+            var succesLog = $"The name \'{sourceName}\' has been replaced by \'{newName}\'";
+            var errorLog = $"Name '{sourceName}' was not found in the database";
 
             var collection = GetMongoCollection();
 
             var filter = Builders<BsonDocument>.Filter.Eq("Name", sourceName);
+            var filterForNew = Builders<BsonDocument>.Filter.Eq("Name", newName);
 
             var updateDefinition = Builders<BsonDocument>.Update.Set("Name", newName);
+
+            var check = (await (await collection.FindAsync(filterForNew)).ToListAsync()).Any();
+
+            if (check)
+            {
+                Log.Error($"Name '{newName}' was found in the database");
+
+                return $"Name '{newName}' was found in the database";
+            }
 
             var result = await collection.UpdateOneAsync(filter, updateDefinition);
 
@@ -146,6 +156,32 @@ namespace MachineAPI.Controllers
 
                 return result;
             }
+        }
+
+        [HttpPost("application/ChangeStateByName/")]
+        public async Task<ActionResult<string>> ChangeState(string name, EState state)
+        {
+            var succesLog = $"The state by name \'{name}\' has been replaced to \'{state}\'";
+            var errorLog = $"Name \'{name}\' was not found in the database";
+
+            var collection = GetMongoCollection();
+
+            var filter = Builders<BsonDocument>.Filter.Eq("Name", name);
+
+            var updateDefinition = Builders<BsonDocument>.Update.Set("State", state);
+
+            var result = await collection.UpdateOneAsync(filter, updateDefinition);
+
+            if (result == null)
+            {
+                Log.Error(errorLog);
+
+                return errorLog;
+            }
+
+            Log.Information(succesLog);
+
+            return succesLog;
         }
     }
 }

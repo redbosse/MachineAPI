@@ -16,12 +16,6 @@ Log.Logger = new LoggerConfiguration()
             .WriteTo.File("logs/MachineApi.log", rollingInterval: RollingInterval.Day)
             .CreateLogger();
 
-List<Person> Users = new List<Person>
-{
-    new Person{ Username = "Vadim", Role = Role.defaultUser },
-    new Person{ Username = "Dima" , Role = Role.Admin}
-};
-
 var database = new MongoClient(MongoAutentificationData.Uri).GetDatabase(MongoAutentificationData.dataBaseToken);
 
 var targetCollection = database.GetCollection<BsonDocument>(MongoAutentificationData.dataBaseCollectionToken);
