@@ -2,10 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using MachineAPI;
 using MongoDB.Driver;
 using MongoDB.Bson;
-
 using MongoDB.Bson.Serialization;
-using System.Reflection.PortableExecutable;
-using System.Runtime.Intrinsics.X86;
+using Serilog;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MachineAPI.Controllers
 {
@@ -45,7 +44,7 @@ namespace MachineAPI.Controllers
 
                 if (isContainsName)
                 {
-                    _logger.LogError(logError);
+                    Log.Error(logError);
 
                     return logError;
                 }
@@ -54,13 +53,13 @@ namespace MachineAPI.Controllers
                 {
                     await collection.InsertOneAsync(machine.ToBsonDocument());
 
-                    _logger.LogDebug(logSucces);
+                    Log.Information(logSucces);
 
                     return logSucces;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.Message);
+                    Log.Error(ex.Message);
 
                     return ex.Message;
                 }
@@ -74,7 +73,11 @@ namespace MachineAPI.Controllers
 
             using (var machineListBson = await collection.FindAsync("{}"))
             {
-                return (await machineListBson.ToListAsync()).ToJson();
+                var agregates = (await machineListBson.ToListAsync()).ToJson();
+
+                Log.Information($"Get Agregates {agregates}");
+
+                return agregates;
             }
         }
 
@@ -94,12 +97,12 @@ namespace MachineAPI.Controllers
 
             if (result == null)
             {
-                _logger.LogError(errorLog);
+                Log.Error(errorLog);
 
                 return errorLog;
             }
 
-            _logger.LogDebug(succesLog);
+            Log.Information(succesLog);
 
             return succesLog;
         }
@@ -119,7 +122,8 @@ namespace MachineAPI.Controllers
 
                 if (machineList.Count < 1)
                 {
-                    _logger.LogError(logError);
+                    Log.Error(logError);
+
                     return logError;
                 }
 
@@ -127,7 +131,8 @@ namespace MachineAPI.Controllers
 
                 if (mashine == null)
                 {
-                    _logger.LogError(logError);
+                    Log.Error(logError);
+
                     return logError;
                 }
 
@@ -137,7 +142,7 @@ namespace MachineAPI.Controllers
 
                 var result = new BsonDocument("State", state).ToJson();
 
-                _logger.LogDebug(result);
+                Log.Information(result);
 
                 return result;
             }
